@@ -160,7 +160,7 @@ def calc_eval_accuracy(eval_set, model, loss_type, loss_func, debug, save_test_p
         utils.check_path(preds_path)
         f_preds = open(preds_path, 'w')
     with torch.no_grad():
-        for qids, labels, *input_data in tqdm(eval_set, desc="Dev/Test batch"):
+        for qids, labels, *input_data in tqdm(eval_set, desc="Train/Dev/Test batch"):
             bs = labels.size(0)
             logits, _ = model(*input_data)
 
@@ -194,7 +194,7 @@ def train(args, resume, has_test_split, devices, kg):
         tb_dir = os.path.join(args.save_dir, "tb")
         if not resume:
             with open(log_path, 'w') as fout:
-                fout.write('epoch,step,dev_acc,test_acc,best_dev_acc,final_test_acc,best_dev_epoch\n')
+                fout.write('epoch,step,train_acc,dev_acc,test_acc,best_dev_acc,final_test_acc,best_dev_epoch\n')
 
             if os.path.exists(tb_dir):
                 shutil.rmtree(tb_dir)
