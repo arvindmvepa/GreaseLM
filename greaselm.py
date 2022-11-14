@@ -372,6 +372,8 @@ def train(args, resume, has_test_split, devices, kg):
 
         # Save checkpoints and evaluate after every epoch
         model.eval()
+        preds_path = os.path.join(args.save_dir, 'train_e{}_preds.csv'.format(epoch_id))
+        train_total_loss, train_acc = calc_eval_accuracy(train_dataloader, model, args.loss, loss_func, args.debug, not args.debug, preds_path)
         preds_path = os.path.join(args.save_dir, 'dev_e{}_preds.csv'.format(epoch_id))
         dev_total_loss, dev_acc = calc_eval_accuracy(dev_dataloader, model, args.loss, loss_func, args.debug, not args.debug, preds_path)
         if has_test_split:
@@ -381,10 +383,12 @@ def train(args, resume, has_test_split, devices, kg):
             test_acc = 0
 
         print('-' * 71)
-        print('| epoch {:3} | step {:5} | dev_acc {:7.4f} | test_acc {:7.4f} |'.format(epoch_id, global_step, dev_acc, test_acc))
+        print('| epoch {:3} | step {:5} | train_acc {:7.4f} | dev_acc {:7.4f} | test_acc {:7.4f} |'.format(epoch_id, global_step, train_acc, dev_acc, test_acc))
         print('-' * 71)
 
         if not args.debug:
+            tb_writer.add_scalar('Train/Acc', train_acc, global_step)
+            tb_writer.add_scalar('Train/Loss', train_total_loss, global_step)
             tb_writer.add_scalar('Dev/Acc', dev_acc, global_step)
             tb_writer.add_scalar('Dev/Loss', dev_total_loss, global_step)
             if has_test_split:
@@ -398,9 +402,9 @@ def train(args, resume, has_test_split, devices, kg):
             best_dev_epoch = epoch_id
         if not args.debug:
             with open(log_path, 'a') as fout:
-                fout.write('{:3},{:5},{:7.4f},{:7.4f},{:7.4f},{:7.4f},{:3}\n'.format(epoch_id, global_step, dev_acc, test_acc, best_dev_acc, final_test_acc, best_dev_epoch))
+                fout.write('{:3},{:5},{:7.4f},{:7.4f},{:7.4f},{:7.4f},{:7.4f},{:3}\n'.format(epoch_id, global_step, train_acc, dev_acc, test_acc, best_dev_acc, final_test_acc, best_dev_epoch))
 
-        wandb.log({"dev_acc": dev_acc, "dev_loss": dev_total_loss, "best_dev_acc": best_dev_acc, "best_dev_epoch": best_dev_epoch}, step=global_step)
+        wandb.log({"train_acc": train_acc, "train_loss": train_total_loss, "dev_acc": dev_acc, "dev_loss": dev_total_loss, "best_dev_acc": best_dev_acc, "best_dev_epoch": best_dev_epoch}, step=global_step)
         if has_test_split:
             wandb.log({"test_acc": test_acc, "test_loss": test_total_loss, "final_test_acc": final_test_acc}, step=global_step)
 
