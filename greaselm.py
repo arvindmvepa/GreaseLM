@@ -27,6 +27,7 @@ DECODER_DEFAULT_LR = {
     'csqa': 1e-3,
     'obqa': 3e-4,
     'medqa_usmle': 1e-3,
+    'nephqa': 1e-3,
 }
 
 import numpy as np
@@ -405,11 +406,12 @@ def train(args, resume, has_test_split, devices, kg):
 
         # Save the model checkpoint
         if args.save_model:
-            model_state_dict = model.state_dict()
-            del model_state_dict["lmgnn.concept_emb.emb.weight"]
-            checkpoint = {"model": model_state_dict, "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(), "epoch": epoch_id, "global_step": global_step, "best_dev_epoch": best_dev_epoch, "best_dev_acc": best_dev_acc, "final_test_acc": final_test_acc, "config": args}
-            print('Saving model to {}.{}'.format(model_path, epoch_id))
-            torch.save(checkpoint, model_path +".{}".format(epoch_id))
+            if dev_acc == best_dev_acc:
+                model_state_dict = model.state_dict()
+                del model_state_dict["lmgnn.concept_emb.emb.weight"]
+                checkpoint = {"model": model_state_dict, "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(), "epoch": epoch_id, "global_step": global_step, "best_dev_epoch": best_dev_epoch, "best_dev_acc": best_dev_acc, "final_test_acc": final_test_acc, "config": args}
+                print('Saving model to {}.{}'.format(model_path, epoch_id))
+                torch.save(checkpoint, model_path +".{}".format(epoch_id))
         model.train()
         start_time = time.time()
         if epoch_id > args.unfreeze_epoch and epoch_id - best_dev_epoch >= args.max_epochs_before_stop:
@@ -515,7 +517,7 @@ def main(args):
     has_test_split = True
     devices = get_devices(args.cuda)
     kg = "cpnet"
-    if args.dataset == "medqa_usmle":
+    if args.dataset == "medqa_usmle" or args.dataset == "nephqa":
         kg = "ddb"
 
     if not args.use_wandb:
@@ -532,7 +534,7 @@ def main(args):
 
     args.hf_version = transformers.__version__
 
-    with wandb.init(project="KG-LM", config=args, name=args.run_name, resume="allow", id=wandb_id, settings=wandb.Settings(start_method="fork"), mode=wandb_mode):
+    with wandb.init(project="KG-LM", config=args, name=args.run_name, resume="allow", id=wandb_id, settings=wandb.Settings(start_method="thread"), mode=wandb_mode):
         print(socket.gethostname())
         print ("pid:", os.getpid())
         print ("screen: %s" % subprocess.check_output('echo $STY', shell=True).decode('utf'))

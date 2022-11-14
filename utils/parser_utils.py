@@ -21,14 +21,18 @@ ENCODER_DEFAULT_LR = {
     'medqa_usmle': {
         'cambridgeltl/SapBERT-from-PubMedBERT-fulltext': 5e-5,
     },
+    'nephqa': {
+        'cambridgeltl/SapBERT-from-PubMedBERT-fulltext': 5e-5,
+    },
 }
 
-DATASET_LIST = ['csqa', 'obqa', 'medqa_usmle']
+DATASET_LIST = ['csqa', 'obqa', 'medqa_usmle', 'nephqa']
 
 DATASET_SETTING = {
     'csqa': 'inhouse',
     'obqa': 'official',
     'medqa_usmle': 'official',
+    'nephqa': 'official',
 }
 
 DATASET_NO_TEST = []

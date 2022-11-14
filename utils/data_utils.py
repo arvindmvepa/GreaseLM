@@ -2,6 +2,7 @@ import itertools
 import json
 import pickle
 import os
+import joblib
 
 import numpy as np
 import torch
@@ -220,32 +221,42 @@ class GreaseLM_DataLoader(object):
         if kg == "cpnet":
             # Load cpnet
             cpnet_vocab_path = "data/cpnet/concept.txt"
-            with open(cpnet_vocab_path, "r", encoding="utf8") as fin:
+            with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
                 self.id2concept = [w.strip() for w in fin]
             self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
             self.id2relation = conceptnet.merged_relations
+        elif kg == "ddb_scratch":
+            cpnet_vocab_path = "data/ddb/vocab.txt"
+            with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
+                self.id2concept = [w.strip() for w in fin]
+            self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
+            self.id2relation = self.id2relation = ['associated', 'causes', 'interacts', 'treats']
         elif kg == "ddb":
             cpnet_vocab_path = "data/ddb/vocab.txt"
-            with open(cpnet_vocab_path, "r", encoding="utf8") as fin:
+            with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
                 self.id2concept = [w.strip() for w in fin]
             self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
             self.id2relation = [
-                'belongstothecategoryof',
-                'isacategory',
-                'maycause',
-                'isasubtypeof',
-                'isariskfactorof',
-                'isassociatedwith',
-                'maycontraindicate',
-                'interactswith',
-                'belongstothedrugfamilyof',
-                'child-parent',
-                'isavectorfor',
-                'mabeallelicwith',
-                'seealso',
-                'isaningradientof',
-                'mabeindicatedby'
-            ]
+                #'belongstothecategoryof',
+                #'isacategory',
+                #'maycause',
+                #'isasubtypeof',
+                #'isariskfactorof',
+                #'isassociatedwith',
+                #'maycontraindicate',
+                #'interactswith',
+                #'belongstothedrugfamilyof',
+                #'child-parent',
+                #'isavectorfor',
+                #'mabeallelicwith',
+                #'seealso',
+                #'isaningradientof',
+                #'mabeindicatedby',
+                #'associated',
+                #'causes',
+                #'interacts',
+                #'treats'
+		'RO', 'RN', 'RB']
         else:
             raise ValueError("Invalid value for kg.")
 
@@ -298,7 +309,7 @@ class GreaseLM_DataLoader(object):
             with open(adj_pk_path, "rb") as in_file:
                 try:
                     while True:
-                        ex = pickle.load(in_file)
+                        ex = joblib.load(in_file)
                         if type(ex) == dict:
                             adj_concept_pairs.append(ex)
                         elif type(ex) == list:
@@ -413,13 +424,13 @@ class GreaseLM_DataLoader(object):
 
             if not self.debug:
                 with open(cache_path, 'wb') as f:
-                    pickle.dump([adj_lengths_ori, concept_ids, node_type_ids, node_scores, adj_lengths, edge_index, edge_type, half_n_rel, special_nodes_mask], f)
+                    joblib.dump([adj_lengths_ori, concept_ids, node_type_ids, node_scores, adj_lengths, edge_index, edge_type, half_n_rel, special_nodes_mask], f)
 
 
         ori_adj_mean  = adj_lengths_ori.float().mean().item()
         ori_adj_sigma = np.sqrt(((adj_lengths_ori.float() - ori_adj_mean)**2).mean().item())
         print('| ori_adj_len: mu {:.2f} sigma {:.2f} | adj_len: {:.2f} |'.format(ori_adj_mean, ori_adj_sigma, adj_lengths.float().mean().item()) +
-            ' prune_rate： {:.2f} |'.format((adj_lengths_ori > adj_lengths).float().mean().item()) +
+            ' prune_rateÃ¯Â¼Å¡ {:.2f} |'.format((adj_lengths_ori > adj_lengths).float().mean().item()) +
             ' qc_num: {:.2f} | ac_num: {:.2f} |'.format((node_type_ids == 0).float().sum(1).mean().item(),
                                                         (node_type_ids == 1).float().sum(1).mean().item()))
 
@@ -430,7 +441,7 @@ class GreaseLM_DataLoader(object):
         #concept_ids: (n_questions, num_choice, max_node_num)
         #node_type_ids: (n_questions, num_choice, max_node_num)
         #node_scores: (n_questions, num_choice, max_node_num)
-        #adj_lengths: (n_questions,　num_choice)
+        #adj_lengths: (n_questions,Ã£â‚¬â‚¬num_choice)
         return concept_ids, node_type_ids, node_scores, adj_lengths, special_nodes_mask, (edge_index, edge_type) #, half_n_rel * 2 + 1
 
 
@@ -448,7 +459,7 @@ def load_gpt_input_tensors(statement_jsonl_path, max_seq_length):
 
     def load_qa_dataset(dataset_path):
         """ Output a list of tuples(story, 1st continuation, 2nd continuation, label) """
-        with open(dataset_path, "r", encoding="utf-8") as fin:
+        with open(dataset_path, "r", encoding="windows-1252") as fin:
             output = []
             for line in fin:
                 input_json = json.loads(line)
@@ -533,7 +544,7 @@ def load_bert_xlnet_roberta_input_tensors(statement_jsonl_path, max_seq_length, 
             self.label = label
 
     def read_examples(input_file):
-        with open(input_file, "r", encoding="utf-8") as f:
+        with open(input_file, "r", encoding="windows-1252") as f:
             examples = []
             for line in f.readlines():
                 json_dic = json.loads(line)

@@ -1,11 +1,12 @@
 import logging
 import os
+import sys
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import modeling_bert
-from transformers import modeling_roberta
+from transformers.models.bert import modeling_bert
+from transformers.models.roberta import modeling_roberta
 from transformers import PretrainedConfig
 from transformers.file_utils import (
     TF2_WEIGHTS_NAME,
@@ -15,6 +16,7 @@ from transformers.file_utils import (
     hf_bucket_url,
     is_remote_url,
 )
+#from transformers import AutoModel, AutoTokenizer
 
 from modeling import modeling_gnn
 from utils import layers
@@ -22,13 +24,11 @@ from utils import utils
 
 logger = logging.getLogger(__name__)
 
-
 if os.environ.get('INHERIT_BERT', 0):
     ModelClass = modeling_bert.BertModel
 else:
     ModelClass = modeling_roberta.RobertaModel
-    
-print ('ModelClass', ModelClass)
+    ModelClass = modeling_bert.BertModel
 
 
 class GreaseLM(nn.Module):
@@ -143,6 +143,8 @@ class LMGNN(nn.Module):
                  pretrained_concept_emb=None, freeze_ent_emb=True,
                  init_range=0.02, ie_dim=200, info_exchange=True, ie_layer_num=1, sep_ie_layers=False, layer_id=-1):
         super().__init__()
+        print(model_name)
+        sys.stdout.flush()
         config, _ = ModelClass.config_class.from_pretrained(
             model_name,
             cache_dir=None, return_unused_kwargs=True,
@@ -559,7 +561,6 @@ class TextKGMessagePassing(ModelClass):
                 archive_file = hf_bucket_url(
                     pretrained_model_name_or_path,
                     filename=(TF2_WEIGHTS_NAME if from_tf else WEIGHTS_NAME),
-                    use_cdn=use_cdn,
                 )
 
             try:
