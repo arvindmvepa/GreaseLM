@@ -48,7 +48,7 @@ def load_data(args, devices, kg):
     #########################################################
     # Construct the dataset
     #########################################################
-    dataset = data_utils.GreaseLM_DataLoader(args.train_statements, args.train_adj,
+    dataset = data_utils.GreaseLM_DataLoader(args.data_dir, args.train_statements, args.train_adj,
         args.dev_statements, args.dev_adj,
         args.test_statements, args.test_adj,
         batch_size=args.batch_size, eval_batch_size=args.eval_batch_size,

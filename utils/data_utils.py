@@ -90,13 +90,14 @@ class MultiGPUSparseAdjDataBatchGenerator(object):
 
 class GreaseLM_DataLoader(object):
 
-    def __init__(self, train_statement_path, train_adj_path,
+    def __init__(self, data_dir, train_statement_path, train_adj_path,
                  dev_statement_path, dev_adj_path,
                  test_statement_path, test_adj_path,
                  batch_size, eval_batch_size, device, model_name, max_node_num=200, max_seq_length=128,
                  is_inhouse=False, inhouse_train_qids_path=None,
                  subsample=1.0, n_train=-1, debug=False, cxt_node_connects_all=False, kg="cpnet"):
         super().__init__()
+        self.data_dir = data_dir
         self.batch_size = batch_size
         self.eval_batch_size = eval_batch_size
         self.device0, self.device1 = device
@@ -220,19 +221,19 @@ class GreaseLM_DataLoader(object):
 
         if kg == "cpnet":
             # Load cpnet
-            cpnet_vocab_path = "data/cpnet/concept.txt"
+            cpnet_vocab_path = os.path.join(f"{self.data_dir}", "cpnet", "concept.txt")
             with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
                 self.id2concept = [w.strip() for w in fin]
             self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
             self.id2relation = conceptnet.merged_relations
         elif kg == "ddb_scratch":
-            cpnet_vocab_path = "data/ddb/vocab.txt"
+            cpnet_vocab_path = os.path.join(f"{self.data_dir}", "ddb", "vocab.txt")
             with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
                 self.id2concept = [w.strip() for w in fin]
             self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
             self.id2relation = self.id2relation = ['associated', 'causes', 'interacts', 'treats']
         elif kg == "ddb":
-            cpnet_vocab_path = "data/ddb/vocab.txt"
+            cpnet_vocab_path = os.path.join(f"{self.data_dir}", "ddb", "vocab.txt")
             with open(cpnet_vocab_path, "r", encoding="utf-8") as fin:
                 self.id2concept = [w.strip() for w in fin]
             self.concept2id = {w: i for i, w in enumerate(self.id2concept)}
