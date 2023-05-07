@@ -573,9 +573,9 @@ if __name__ == '__main__':
     parser.add_argument("--resume_id", default=None, type=str, help="The wandb run id to resume if `resume_checkpoint` is not None or 'None'.")
 
     # Data
-    parser.add_argument('--train_adj', default=f'{args.data_dir}/{args.dataset}/graph/train.graph.adj.pk', help="The path to the retrieved KG subgraphs of the training set.")
-    parser.add_argument('--dev_adj', default=f'{args.data_dir}/{args.dataset}/graph/dev.graph.adj.pk', help="The path to the retrieved KG subgraphs of the dev set.")
-    parser.add_argument('--test_adj', default=f'{args.data_dir}/{args.dataset}/graph/test.graph.adj.pk', help="The path to the retrieved KG subgraphs of the test set.")
+    parser.add_argument('--train_adj', default=os.path.join(f'{args.data_dir}', f'{args.dataset}', 'graph', 'train.graph.adj.pk'), help="The path to the retrieved KG subgraphs of the training set.")
+    parser.add_argument('--dev_adj', default=os.path.join(f'{args.data_dir}', f'{args.dataset}', 'graph', 'dev.graph.adj.pk'), help="The path to the retrieved KG subgraphs of the dev set.")
+    parser.add_argument('--test_adj', default=os.path.join(f'{args.data_dir}', f'{args.dataset}', 'graph', 'test.graph.adj.pk'), help="The path to the retrieved KG subgraphs of the test set.")
     parser.add_argument('--max_node_num', default=200, type=int, help="Max number of nodes / the threshold used to prune nodes.")
     parser.add_argument('--subsample', default=1.0, type=float, help="The ratio to subsample the training set.")
     parser.add_argument('--n_train', default=-1, type=int, help="Number of training examples to use. Setting it to -1 means using the `subsample` argument to determine the training set size instead; otherwise it will override the `subsample` argument.")

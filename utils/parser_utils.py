@@ -1,6 +1,7 @@
 import argparse
 
 from utils import utils
+import os
 
 ENCODER_DEFAULT_LR = {
     'default': 1e-3,
@@ -38,10 +39,10 @@ DATASET_SETTING = {
 DATASET_NO_TEST = []
 
 EMB_PATHS = {
-    'transe': 'data/cpnet/glove.transe.sgd.ent.npy',
-    'numberbatch': 'data/cpnet/concept.nb.npy',
-    'tzw': 'data/cpnet/tzw.ent.npy',
-    'ddb': 'data/ddb/ent_emb.npy',
+    'transe': os.path.join('{data_dir}', 'cpnet', 'glove.transe.sgd.ent.npy'),
+    'numberbatch': os.path.join('{data_dir}', 'cpnet', 'concept.nb.npy'),
+    'tzw': os.path.join('{data_dir}', 'cpnet', 'tzw.ent.npy'),
+    'ddb': os.path.join('{data_dir}', 'cpnet', 'ent_emb.npy'),
 }
 
 
@@ -52,11 +53,11 @@ def add_data_arguments(parser):
     parser.add_argument('-ds', '--dataset', default='csqa', choices=DATASET_LIST, help='dataset name')
     parser.add_argument('--data_dir', default='data', type=str, help='Path to the data directory')
     parser.add_argument('-ih', '--inhouse', type=utils.bool_flag, nargs='?', const=True, help='run in-house setting')
-    parser.add_argument('--inhouse_train_qids', default='data/{dataset}/inhouse_split_qids.txt', help='qids of the in-house training set')
+    parser.add_argument('--inhouse_train_qids', default='{data_dir}/{dataset}/inhouse_split_qids.txt', help='qids of the in-house training set')
     # statements
-    parser.add_argument('--train_statements', default='{data_dir}/{dataset}/statement/train.statement.jsonl')
-    parser.add_argument('--dev_statements', default='{data_dir}/{dataset}/statement/dev.statement.jsonl')
-    parser.add_argument('--test_statements', default='{data_dir}/{dataset}/statement/test.statement.jsonl')
+    parser.add_argument('--train_statements', default=os.path.join('{data_dir}', '{dataset}', 'statement', 'train.statement.jsonl'))
+    parser.add_argument('--dev_statements', default=os.path.join('{data_dir}', '{dataset}', 'statement', 'dev.statement.jsonl'))
+    parser.add_argument('--test_statements', default=os.path.join('{data_dir}', '{dataset}', 'statement', 'test.statement.jsonl'))
     # preprocessing options
     parser.add_argument('-sl', '--max_seq_len', default=100, type=int)
     # set dataset defaults
