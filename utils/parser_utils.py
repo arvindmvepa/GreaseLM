@@ -42,7 +42,8 @@ EMB_PATHS = {
     'transe': os.path.join('{data_dir}', 'cpnet', 'glove.transe.sgd.ent.npy'),
     'numberbatch': os.path.join('{data_dir}', 'cpnet', 'concept.nb.npy'),
     'tzw': os.path.join('{data_dir}', 'cpnet', 'tzw.ent.npy'),
-    'ddb': os.path.join('{data_dir}', 'cpnet', 'ent_emb.npy'),
+    # fix path for current project
+    'ddb': os.path.join('{data_dir}', 'ddb', 'ent_emb.npy'),
 }
 
 
