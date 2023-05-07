@@ -62,7 +62,7 @@ def add_data_arguments(parser):
     parser.add_argument('-sl', '--max_seq_len', default=100, type=int)
     # set dataset defaults
     args, _ = parser.parse_known_args()
-    parser.set_defaults(ent_emb_paths=[EMB_PATHS.get(s).format(args.data_dir) for s in args.ent_emb],
+    parser.set_defaults(ent_emb_paths=[EMB_PATHS.get(s).format(data_dir=args.data_dir) for s in args.ent_emb],
                         inhouse=(DATASET_SETTING[args.dataset] == 'inhouse'),
                         inhouse_train_qids=args.inhouse_train_qids.format(data_dir=args.data_dir, dataset=args.dataset))
     data_splits = ('train', 'dev') if args.dataset in DATASET_NO_TEST else ('train', 'dev', 'test')
