@@ -39,10 +39,10 @@ DATASET_SETTING = {
 DATASET_NO_TEST = []
 
 EMB_PATHS = {
-    'transe': os.path.join('{data_dir}', 'cpnet', 'glove.transe.sgd.ent.npy'),
-    'numberbatch': os.path.join('{data_dir}', 'cpnet', 'concept.nb.npy'),
-    'tzw': os.path.join('{data_dir}', 'cpnet', 'tzw.ent.npy'),
-    'ddb': os.path.join('{data_dir}', 'cpnet', 'ent_emb.npy'),
+    'transe': os.path.join('cpnet', 'glove.transe.sgd.ent.npy'),
+    'numberbatch': os.path.join('cpnet', 'concept.nb.npy'),
+    'tzw': os.path.join('cpnet', 'tzw.ent.npy'),
+    'ddb': os.path.join('cpnet', 'ent_emb.npy'),
 }
 
 
@@ -62,7 +62,7 @@ def add_data_arguments(parser):
     parser.add_argument('-sl', '--max_seq_len', default=100, type=int)
     # set dataset defaults
     args, _ = parser.parse_known_args()
-    parser.set_defaults(ent_emb_paths=[EMB_PATHS.get(s) for s in args.ent_emb],
+    parser.set_defaults(ent_emb_paths=[os.path.join(args.data_dir, EMB_PATHS.get(s)) for s in args.ent_emb],
                         inhouse=(DATASET_SETTING[args.dataset] == 'inhouse'),
                         inhouse_train_qids=args.inhouse_train_qids.format(dataset=args.dataset))
     data_splits = ('train', 'dev') if args.dataset in DATASET_NO_TEST else ('train', 'dev', 'test')
