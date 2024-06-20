@@ -1,6 +1,6 @@
 import argparse
 
-from utils import utils
+from misc_utils import utils
 import os
 
 ENCODER_DEFAULT_LR = {

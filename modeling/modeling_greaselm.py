@@ -19,8 +19,8 @@ from transformers.file_utils import (
 #from transformers import AutoModel, AutoTokenizer
 
 from modeling import modeling_gnn
-from utils import layers
-from utils import utils
+from misc_utils import layers
+from misc_utils import utils
 
 logger = logging.getLogger(__name__)
 

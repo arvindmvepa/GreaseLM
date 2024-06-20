@@ -17,7 +17,7 @@ except:
     pass
 
 from preprocess_utils import conceptnet
-from utils import utils
+from misc_utils import utils
 
 MODEL_CLASS_TO_NAME = {
     'gpt': list(OPENAI_GPT_PRETRAINED_CONFIG_ARCHIVE_MAP.keys()),
